@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: tutor
+    description: AI-assisted Kannada tutoring
 paths:
   /healthz:
     get:
@@ -24,6 +26,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /gemini/tutor:
+    post:
+      operationId: askKannadaTutor
+      tags: [tutor]
+      summary: Ask the Kannada tutor for help
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TutorInput"
+      responses:
+        "200":
+          description: Tutor response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TutorReply"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Tutor is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +65,33 @@ components:
           type: string
       required:
         - status
+    TutorInput:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        context:
+          type: string
+          maxLength: 300
+      required: [message, level]
+    TutorReply:
+      type: object
+      properties:
+        answer:
+          type: string
+        source:
+          type: string
+          enum: [gemini, sample]
+      required: [answer, source]
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
 

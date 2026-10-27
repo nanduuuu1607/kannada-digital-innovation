@@ -1,15 +1,17 @@
-# [Project name]
+# KannadaMitra
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+KannadaMitra helps newcomers, students, employees, and travellers learn practical Kannada and communicate more confidently in everyday Karnataka life.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/kannada-mitra run typecheck` — typecheck the web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
+- `pnpm run export:zip` — create a source ZIP for hackathon submission
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Optional secret: `GEMINI_API_KEY` — enables live tutor responses; sample mode works without it
 
 ## Stack
 
@@ -22,23 +24,28 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/kannada-mitra/` — React/Vite app, routes, and UI
+- `artifacts/api-server/src/routes/tutor.ts` — server-side Gemini tutor and sample mode
+- `lib/api-spec/openapi.yaml` — API contract source of truth
+- `README.md` — run, configure, publish, and ZIP export instructions
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Learning progress and favorites are local to the browser; no account or cloud-sync service is required for the demo.
+- Gemini is called only from the API server. When `GEMINI_API_KEY` is absent, the endpoint labels its response as sample content.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Practical Kannada lessons, phrasebook, pronunciation, quizzes, conversation practice, progress tracking, and an optional Gemini tutor.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Use a navy blue, white, and saffron visual palette.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Keep `GEMINI_API_KEY` in Replit Secrets; never add it to frontend code or `VITE_` variables.
+- When changing the API contract, rerun `pnpm --filter @workspace/api-spec run codegen`.
 
 ## Pointers
 
