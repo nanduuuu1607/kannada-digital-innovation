@@ -1,56 +1,79 @@
 # KannadaMitra — Your AI Kannada Companion
 
-KannadaMitra helps newcomers, students, employees, and travellers learn practical Kannada for everyday life in Karnataka. It was created for the Kannada Digital Innovation Hackathon 2026, based on the challenge “Kannada for Everyone.”
+KannadaMitra is a practical Kannada-learning app for newcomers, students, employees, and travellers in Karnataka. It was built for the Kannada Digital Innovation Hackathon 2026.
 
-## What’s included
+## Problem statement
 
-- A learning dashboard and beginner-to-advanced sample lessons
-- Kannada script, English transliteration, and meanings
-- Searchable, category-based phrasebook with favorites
-- Multiple-choice quizzes with scores and explanations
-- Guided real-life practice for travel, shopping, restaurants, and other situations
-- Kannada pronunciation through browser speech synthesis when a Kannada voice is available
-- Progress and favorites saved in the current browser using local storage
-- A server-side Gemini tutor endpoint with an honest sample-response mode when Gemini is not configured
-- An About page explaining the challenge, solution, technology, and social impact
+**Challenge chosen: “Kannada for Everyone.”** People who are new to Kannada need an accessible way to learn useful words and phrases, understand pronunciation, and practice everyday situations—not just memorize vocabulary.
 
-Learning content and practice work without an AI key. Progress and favorites are stored in the browser and do not sync between devices.
+KannadaMitra combines guided lessons, a searchable phrasebook, quizzes, and real-life practice scenarios so learners can build confidence using Kannada in daily life.
+
+## Features
+
+- Beginner, intermediate, and advanced sample lessons
+- Kannada script, English transliteration, and English meanings
+- Searchable phrasebook with categories and favorites
+- Multiple-choice quizzes with scores and answer explanations
+- Guided practice for travel, shopping, restaurants, and other situations
+- Browser speech synthesis when a Kannada voice is available
+- Learning progress and favorites saved in browser local storage
+- Optional Gemini tutor endpoint, with a clearly labeled sample mode when no API key is configured
+- About page describing the challenge, solution, technology, and intended impact
+
+Lessons, quizzes, and practice work without an AI key. Progress and favorites are stored in the current browser and do not sync between devices.
+
+## Tech stack
+
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, TanStack Query, Wouter
+- **API:** Node.js, Express, TypeScript
+- **AI tutor:** Gemini 2.5 Flash through a server-side API request
+- **API contract and validation:** OpenAPI, generated React client, Zod
+- **Persistence:** Browser local storage for learner progress and favorites
+
+## Requirements
+
+- Node.js 20 or newer
+- pnpm
+
+## Setup and run locally
+
+```bash
+git clone <your-github-repository-url>
+cd <repository-directory>
+pnpm install
+cp .env.example .env
+```
+
+Open two terminals from the project root. Start the API server in the first:
+
+```bash
+set -a && . ./.env && set +a
+PORT=8080 pnpm --filter @workspace/api-server run dev
+```
+
+Start the web app in the second:
+
+```bash
+set -a && . ./.env && set +a
+PORT=23969 BASE_PATH=/ pnpm --filter @workspace/kannada-mitra run dev
+```
+
+Open `http://localhost:23969`. The Vite development server forwards `/api/*` requests to the local API server on port `8080`.
+
+To enable live Gemini tutoring, set `GEMINI_API_KEY` in `.env` before starting the API server. The key is read only by the server; do not add it to frontend environment variables or commit `.env`. With the key left blank, the tutor returns a sample response. If a configured Gemini request fails, the API reports an error instead of silently substituting sample content.
 
 ## Run on Replit
 
-1. Open the project in Replit and use **Run**. The project has separate web and API workflows:
-   - `artifacts/kannada-mitra: web`
-   - `artifacts/api-server: API Server`
-2. The web app runs at the root preview. The API is available under `/api`.
-3. To enable live Gemini tutoring, add `GEMINI_API_KEY` in **Tools → Secrets**. The key is read only by the API server and is never sent to the browser. Restart the API Server workflow after adding it.
-4. Without `GEMINI_API_KEY`, the tutor returns a clearly labeled sample response. If a configured Gemini request fails, the API reports an error rather than silently replacing it with sample content.
+Open the project in Replit and use **Run**. The project has separate web and API workflows:
 
-## Run locally
+- `artifacts/kannada-mitra: web`
+- `artifacts/api-server: API Server`
 
-Requirements: Node.js 20+ and pnpm.
+The web app runs at the root preview, and the API is available under `/api`. To enable live Gemini tutoring, add `GEMINI_API_KEY` in **Tools → Secrets**, then restart the API Server workflow. Without the key, the tutor remains in sample mode.
 
-```bash
-pnpm install
-pnpm --filter @workspace/api-server run dev
-```
+## API
 
-In a second terminal, run the web app with the Vite environment values supplied by the Replit workflow:
-
-```bash
-PORT=5173 BASE_PATH=/ pnpm --filter @workspace/kannada-mitra run dev
-```
-
-The API listens on `PORT` and handles `/api/*`. Set `GEMINI_API_KEY` in the server environment to enable live tutoring. Keep it out of frontend environment variables and source control.
-
-## Configuration
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | No | Server-only key for Gemini 2.5 Flash tutoring. Without it, the tutor uses a sample response. |
-| `PORT` | Provided by workflow | Port for the API or web service. |
-| `BASE_PATH` | Provided by workflow | Web app mount path. |
-
-The tutor endpoint is `POST /api/gemini/tutor`. It accepts a message, learner level, and optional practice context. It validates requests against the generated OpenAPI contract before calling Gemini.
+`POST /api/gemini/tutor` accepts a message, learner level, and optional practice context. Requests and responses are validated against the generated OpenAPI contract.
 
 ## Development checks
 
@@ -62,9 +85,16 @@ pnpm --filter @workspace/api-server run typecheck
 
 ## Publish
 
-Use Replit’s **Publish** action from the project to publish the web app. Add `GEMINI_API_KEY` to Replit Secrets before publishing if the live tutor should be enabled; otherwise the app remains usable in sample mode.
+Use Replit’s **Publish** action to publish the web app. Add `GEMINI_API_KEY` to Replit Secrets before publishing if live tutoring should be enabled; otherwise the app remains usable in sample mode.
 
-## Export a ZIP for submission
+## Submission notes
+
+- Create or select a GitHub repository and push this project to it.
+- Make the repository public, or grant the organizers access before submitting its URL.
+- Keep `.env` and all real API keys out of Git; `.env.example` contains only a blank placeholder.
+- The existing commit history is preserved. Use clear messages for future commits.
+
+## Export a ZIP
 
 - In Replit, open the three-dot menu at the top of the file tree and choose **Download as zip**.
 - Or run `pnpm run export:zip` from the project root. It creates `KannadaMitra-submission.zip`, excluding dependency folders, build output, local agent files, and `.env` files.
