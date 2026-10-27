@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "KannadaMitra"
+description = "An AI-assisted Kannada learning companion for newcomers, students, travellers, and anyone who wants to communicate more confidently in everyday Karnataka life. Includes practical lessons, phrasebook, conversation practice, quizzes, pronunciation, and local progress."
+version = "1.0.0"
+id = "artifacts/kannada-mitra"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23969
+
+[services.development]
+run = "pnpm --filter @workspace/kannada-mitra run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/kannada-mitra", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/kannada-mitra/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23969"
+BASE_PATH = "/"
